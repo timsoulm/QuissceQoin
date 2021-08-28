@@ -1,38 +1,30 @@
-.App {
-  text-align: center;
+.quissce-qoin-info-container {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.quisse-qoin-info-container-component {
+    margin-bottom: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.quissce-qoin-info-container-component-header {
+    margin-bottom: 12px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.dad-form-item {
+    margin-bottom: 12px;
 }
 
-.App-link {
-  color: #61dafb;
+.browse-dad-db-table {
+    padding: 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.transfer-modal-text {
+    margin-bottom: 12px;
+}
+
+.quissce-dad-cards {
+    display: flex;
 }
