@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Web3 from 'web3';
 import './App.css';
 import QuissceQoin from './abis/QuissceQoin.json';
 import QuissceDads from './abis/QuissceDads.json';
@@ -7,6 +6,7 @@ import QuissceDadDollars from './abis/QuissceDadDollars.json';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import QuissceQoinTab from './QuissceQoinTab.js';
 import BrowseDadDBTab from './BrowseDadDBTab.js';
+import getWeb3 from "./getWeb3";
 
 const TABS = {
   'QUISSCE_QOIN': 'QUISSCE_QOIN',
@@ -26,11 +26,12 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        const web3 = new Web3(Web3.givenProvider);
-        setWeb3(web3);
-
+        const web3 = await getWeb3();
         const accounts = await web3.eth.getAccounts();
         const currentAccount = accounts[0];
+        web3.eth.defaultAccount = currentAccount;
+
+        setWeb3(web3);
         setAccount(currentAccount);
 
         const networkId = await web3.eth.net.getId();
