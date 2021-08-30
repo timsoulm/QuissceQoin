@@ -77,11 +77,11 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 />
                 <Button variant="outline-secondary" onClick={() => {
                     quissceDadDollars.methods.claimDadDollars().send({ from: account }).on('transactionHash', (hash) => {
-                        alert('dad dollars successfully claimed!');
+                        alert('dad dollars successfully claimed! Refreshing in 5 seconds after close...');
 
                         setTimeout(() => {
                             setNeedsUpdate(true);
-                        }, 2000);
+                        }, 5000);
                     });
                 }}>
                     Claim
@@ -138,11 +138,11 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 e.preventDefault();
                 quissceQoin.methods.approve(quissceDads._address, web3.utils.toWei('100000', 'Ether')).send({ from: account }).on('transactionHash', (hash) => {
                     quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies).send({ from: account }).on('transactionHash', (hash) => {
-                        alert('quissce dad successfully created!');
+                        alert('quissce dad successfully created! Refreshing in 5 seconds after close...');
 
                         setTimeout(() => {
                             setNeedsUpdate(true);
-                        }, 2000);
+                        }, 5000);
 
                         setFirstName('');
                         setLastName('');

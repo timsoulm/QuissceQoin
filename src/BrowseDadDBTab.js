@@ -55,16 +55,16 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
 
     function burnDad(dadId) {
         quissceDads.methods.burnDad(dadId).send({ from: account }).on('transactionHash', (hash) => {
-            alert('dad was successfully burned');
-            setTimeout(() => setNeedsUpdate(true), 2000);
+            alert('dad was successfully burned. Refreshing in 5 seconds after close...');
+            setTimeout(() => setNeedsUpdate(true), 5000);
         });
     }
 
     function updateSalePrice(dadId, amount) {
         quissceDads.methods.approve(quissceDads._address, dadId).send({ from: account }).on('transactionHash', (hash) => {
             quissceDads.methods.updateSalePrice(dadId, amount).send({ from: account }).on('transactionHash', (hash) => {
-                alert('dad sale price updated');
-                setTimeout(() => setNeedsUpdate(true), 2000);
+                alert('dad sale price updated. Refreshing in 5 seconds after close...');
+                setTimeout(() => setNeedsUpdate(true), 5000);
             });
         });
     }
@@ -72,8 +72,8 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     function buyDad(dadId, amount) {
         quissceQoin.methods.approve(quissceDads._address, amount).send({ from: account }).on('transactionHash', (hash) => {
             quissceDads.methods.buyDadWithQuissceQoin(dadId).send({ from: account }).on('transactionHash', (hash) => {
-                alert('dad successfully purchased!');
-                setTimeout(() => setNeedsUpdate(true), 2000);
+                alert('dad successfully purchased! Refreshing in 5 seconds after close...');
+                setTimeout(() => setNeedsUpdate(true), 5000);
             });
         });
     }
