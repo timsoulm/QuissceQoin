@@ -64,7 +64,7 @@ contract QuissceDads is ERC721, ERC721Burnable, ERC721Enumerable {
         string memory favoriteFood,
         string memory hobbies
     ) public returns (uint256) {
-        quissceQoin.transferFrom(msg.sender, address(this), 100000 * 10**18);
+        quissceQoin.transferFrom(msg.sender, address(this), 100_000e18);
 
         uint256 newDadId = dadCounter;
         Dad memory newDad = Dad(
@@ -120,7 +120,7 @@ contract QuissceDads is ERC721, ERC721Burnable, ERC721Enumerable {
             }
         }
 
-        quissceQoin.transfer(msg.sender, 50000 * 10**18);
+        quissceQoin.transfer(msg.sender, 50_000e18);
     }
 
     function _beforeTokenTransfer(

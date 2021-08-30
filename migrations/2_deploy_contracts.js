@@ -10,7 +10,4 @@ module.exports = async function (deployer, network, accounts) {
     const quissceDads = await QuissceDads.deployed();
 
     await deployer.deploy(QuissceDadDollars, quissceDads.address);
-
-    await quissceQoin.transfer(accounts[1], '200000000000000000000000');
-    await quissceQoin.transfer(accounts[2], '200000000000000000000000');
 }

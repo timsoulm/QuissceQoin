@@ -1,13 +1,21 @@
 pragma solidity ^0.8.5;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 
-contract QuissceQoin is ERC20 {
+contract QuissceQoin is ERC20, ERC20Capped {
     address public admin;
 
-    constructor() ERC20("Quissce Qoin", "QWIS") {
-        _mint(msg.sender, 69000000 * 10**18);
+    constructor() ERC20("Quissce Qoin", "QWIS") ERC20Capped(69_000_000e18) {
         admin = msg.sender;
+    }
+
+    function _mint(address account, uint256 amount)
+        internal
+        virtual
+        override(ERC20, ERC20Capped)
+    {
+        return super._mint(account, amount);
     }
 
     function mint(address to, uint256 amount) external {
