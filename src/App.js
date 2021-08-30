@@ -79,7 +79,7 @@ function App() {
       <h4>
         This browser doesn't support web3. Please use a desktop browser with a tool such as <a href="https://metamask.io/">Metamask</a> to use the Quissce Qoin Execution Console™.
       </h4>
-      <img src="sadhorse.jpg" />
+      <img src="sadhorse.jpg" alt="horse" />
     </div>;
   }
 
