@@ -22,7 +22,10 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const handleTransferModalTransfer = () => {
         setShowTransferModal(false);
         quissceDads.methods.safeTransferFrom(account, accountToTransferDad, dadIdToTransfer).send().on('transactionHash', (hash) => {
-            alert('congrats, you transfered this dad');
+            alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
+
+            setTimeout(() => setNeedsUpdate(true), 10000);
+
             setDadIdToTransfer('');
         });
     };
@@ -55,16 +58,16 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
 
     function burnDad(dadId) {
         quissceDads.methods.burnDad(dadId).send({ from: account }).on('transactionHash', (hash) => {
-            alert('dad was successfully burned. Refreshing in 5 seconds after close...');
-            setTimeout(() => setNeedsUpdate(true), 5000);
+            alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
+            setTimeout(() => setNeedsUpdate(true), 10000);
         });
     }
 
     function updateSalePrice(dadId, amount) {
         quissceDads.methods.approve(quissceDads._address, dadId).send({ from: account }).on('transactionHash', (hash) => {
             quissceDads.methods.updateSalePrice(dadId, amount).send({ from: account }).on('transactionHash', (hash) => {
-                alert('dad sale price updated. Refreshing in 5 seconds after close...');
-                setTimeout(() => setNeedsUpdate(true), 5000);
+                alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
+                setTimeout(() => setNeedsUpdate(true), 10000);
             });
         });
     }
@@ -72,8 +75,8 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     function buyDad(dadId, amount) {
         quissceQoin.methods.approve(quissceDads._address, amount).send({ from: account }).on('transactionHash', (hash) => {
             quissceDads.methods.buyDadWithQuissceQoin(dadId).send({ from: account }).on('transactionHash', (hash) => {
-                alert('dad successfully purchased! Refreshing in 5 seconds after close...');
-                setTimeout(() => setNeedsUpdate(true), 5000);
+                alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
+                setTimeout(() => setNeedsUpdate(true), 10000);
             });
         });
     }
@@ -129,6 +132,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Image</th>
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Favorite Food</th>
@@ -140,6 +144,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
             <tbody>
                 {dadData.filter(d => !d.isBurned).map(dad => <tr key={dad.id}>
                     <td>{dad.id}</td>
+                    <td><img style={{ maxWidth: '150px', maxHeight: '150px' }} src={dad.imageURI} alt={`Dad ${dad.id}`} /></td>
                     <td>{dad.firstName}</td>
                     <td>{dad.lastName}</td>
                     <td>{dad.favoriteFood}</td>

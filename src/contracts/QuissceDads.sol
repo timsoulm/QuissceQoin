@@ -3,9 +3,15 @@ pragma solidity ^0.8.5;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./QuissceQoin.sol";
 
-contract QuissceDads is ERC721, ERC721Burnable, ERC721Enumerable {
+contract QuissceDads is
+    ERC721,
+    ERC721Burnable,
+    ERC721Enumerable,
+    ERC721URIStorage
+{
     QuissceQoin public quissceQoin;
     uint256 public dadCounter;
     struct Dad {
@@ -17,6 +23,8 @@ contract QuissceDads is ERC721, ERC721Burnable, ERC721Enumerable {
         uint256 dadScore;
         bool isBurned;
         uint256 salePrice;
+        string tokenURI;
+        string imageURI;
     }
 
     Dad[] public dadDataArray;
@@ -62,7 +70,9 @@ contract QuissceDads is ERC721, ERC721Burnable, ERC721Enumerable {
         string memory firstName,
         string memory lastName,
         string memory favoriteFood,
-        string memory hobbies
+        string memory hobbies,
+        string memory tokenURI,
+        string memory imageURI
     ) public returns (uint256) {
         quissceQoin.transferFrom(msg.sender, address(this), 100_000e18);
 
@@ -75,11 +85,14 @@ contract QuissceDads is ERC721, ERC721Burnable, ERC721Enumerable {
             hobbies,
             getDadScore(newDadId, firstName),
             false,
-            0
+            0,
+            tokenURI,
+            imageURI
         );
         dadDataArray.push(newDad);
 
         _safeMint(msg.sender, newDadId);
+        _setTokenURI(newDadId, tokenURI);
 
         for (uint256 i = 0; i < dadDataArray.length; i++) {
             address tokenOwner = ownerOf(i);
@@ -139,5 +152,23 @@ contract QuissceDads is ERC721, ERC721Burnable, ERC721Enumerable {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    function _burn(uint256 tokenId)
+        internal
+        virtual
+        override(ERC721, ERC721URIStorage)
+    {
+        return super._burn(tokenId);
     }
 }

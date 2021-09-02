@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { InputGroup, FormControl, Form, Button, Card, ListGroup } from 'react-bootstrap';
+import { InputGroup, FormControl, Form, Button, Card, ListGroup, Spinner } from 'react-bootstrap';
+import { create } from 'ipfs-http-client';
 
 function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDollars }) {
     const [quissceQoinBalance, setQuissceQoinBalance] = useState('0');
@@ -12,8 +13,63 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     const [lastName, setLastName] = useState('');
     const [favoriteFood, setFavoriteFood] = useState('');
     const [hobbies, setHobbies] = useState('');
+    const [fileIsUploading, setFileIsUploading] = useState(false);
+    const [fileUrl, updateFileUrl] = useState('');
+    const [dadIsSubmitting, setDadIsSubmitting] = useState(false);
 
     const [needsUpdate, setNeedsUpdate] = useState(false);
+
+    const ipfsClient = create('https://ipfs.infura.io:5001/api/v0');
+
+    async function onFileUploadChange(e) {
+        setFileIsUploading(true);
+        const file = e.target.files[0]
+        try {
+            const added = await ipfsClient.add(file);
+            const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+            updateFileUrl(url);
+            setFileIsUploading(false);
+        } catch (error) {
+            alert('Error uploading image file: ', error);
+            setFileIsUploading(false);
+        }
+    }
+
+    async function onFormSubmit(e) {
+        e.preventDefault();
+
+        setDadIsSubmitting(true);
+        let uploadedJsonURI;
+        try {
+            const metaObj = { "name": firstName + lastName, "image": fileUrl };
+            const jsonObj = JSON.stringify(metaObj);
+            const added = await ipfsClient.add(jsonObj);
+            uploadedJsonURI = `https://ipfs.infura.io/ipfs/${added.path}`;
+        } catch (error) {
+            alert('Error uploading metadata file: ', error);
+            setDadIsSubmitting(false);
+            return;
+        }
+
+        setDadIsSubmitting(false);
+
+        console.log(quissceDads.transactionConfirmationBlocks)
+
+        quissceQoin.methods.approve(quissceDads._address, web3.utils.toWei('100000', 'Ether')).send({ from: account }).on('transactionHash', (hash) => {
+            quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies, uploadedJsonURI, fileUrl).send({ from: account }).on('transactionHash', (hash) => {
+                alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
+
+                setTimeout(() => {
+                    setNeedsUpdate(true);
+                }, 10000);
+
+                setFirstName('');
+                setLastName('');
+                setFavoriteFood('');
+                setHobbies('');
+            });
+        });
+    }
 
     useEffect(() => {
         if (!quissceQoin || !quissceDads || !quissceDadDollars) {
@@ -77,11 +133,11 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 />
                 <Button variant="outline-secondary" onClick={() => {
                     quissceDadDollars.methods.claimDadDollars().send({ from: account }).on('transactionHash', (hash) => {
-                        alert('dad dollars successfully claimed! Refreshing in 5 seconds after close...');
+                        alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
 
                         setTimeout(() => {
                             setNeedsUpdate(true);
-                        }, 5000);
+                        }, 10000);
                     });
                 }}>
                     Claim
@@ -115,9 +171,9 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                         dadScoreText = 'Dad scores do not get much higher than this. This is an ultimate father.';
                     }
                     return <Card key={dad.id} style={{ width: '14rem', marginRight: '16px' }}>
-                        <Card.Img variant="top" src="dadFace.png" />
+                        <Card.Img style={{ objectFit: 'cover', height: '300px', width: '100%' }} variant="top" src={dad.imageURI} />
                         <Card.Body>
-                            <Card.Title>{dad.firstName} {dad.lastName}</Card.Title>
+                            <Card.Title><a href={`https://kovan.etherscan.io/token/${quissceDads._address}?a=${dad.id}`} target="_blank" rel="noreferrer">{dad.firstName} {dad.lastName}</a></Card.Title>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>Favorite Food: {dad.favoriteFood}</ListGroup.Item>
                                 <ListGroup.Item>Hobbies: {dad.hobbies}</ListGroup.Item>
@@ -134,23 +190,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
         <div className="quisse-qoin-info-container-component">
             <h4>Mint a Quissce Dad</h4>
             <h6>This will create an entry in the Dad DB</h6>
-            <Form onSubmit={e => {
-                e.preventDefault();
-                quissceQoin.methods.approve(quissceDads._address, web3.utils.toWei('100000', 'Ether')).send({ from: account }).on('transactionHash', (hash) => {
-                    quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies).send({ from: account }).on('transactionHash', (hash) => {
-                        alert('quissce dad successfully created! Refreshing in 5 seconds after close...');
-
-                        setTimeout(() => {
-                            setNeedsUpdate(true);
-                        }, 5000);
-
-                        setFirstName('');
-                        setLastName('');
-                        setFavoriteFood('');
-                        setHobbies('');
-                    });
-                });
-            }}>
+            <Form onSubmit={onFormSubmit}>
                 <InputGroup className="dad-form-item">
                     <InputGroup.Text>Dad First Name</InputGroup.Text>
                     <FormControl id="formDadFirstName" placeholder="Richard" onChange={({ target: { value } }) => setFirstName(value)} value={firstName} />
@@ -167,7 +207,13 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                     <InputGroup.Text>Hobbies</InputGroup.Text>
                     <FormControl id="formDadHobbies" placeholder="Skating" onChange={({ target: { value } }) => setHobbies(value)} value={hobbies} />
                 </InputGroup>
-                <Button type="submit" disabled={!firstName || !lastName || !favoriteFood || !hobbies}>Mint this Dad (costs 100,000 Quissce Qoin)</Button>
+                <Form.Group className="mb-3">
+                    <Form.Label style={{ marginRight: '8px' }}>Upload a dad photo </Form.Label>
+                    <Form.Control type="file" size="lg" onChange={onFileUploadChange} />
+                    {fileIsUploading ? <Spinner style={{ marginLeft: '4px' }} animation="border" size="sm" /> : null}
+                </Form.Group>
+                <Button type="submit" disabled={!firstName || !lastName || !favoriteFood || !hobbies || !fileUrl}>Mint this Dad (costs 100,000 Quissce Qoin)</Button>
+                {dadIsSubmitting ? <Spinner style={{ marginLeft: '4px' }} animation="border" size="sm" /> : null}
             </Form>
         </div>
     </div>;
