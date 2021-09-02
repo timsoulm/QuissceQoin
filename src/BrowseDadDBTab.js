@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, InputGroup, FormControl } from 'react-bootstrap';
+import TransactionTracker from './TransactionTracker';
 
 function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const [dadData, setDadData] = useState([]);
@@ -10,6 +11,10 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const [showTransferModal, setShowTransferModal] = useState(false);
     const [showListModal, setShowListModal] = useState(false);
     const [listedDadPrice, setListedDadPrice] = useState('');
+
+    const [activeTransactionHash, setActiveTransactionHash] = useState(null);
+    const [activeTransactionReceiptBlockHash, setActiveTransactionReceiptBlockHash] = useState(null);
+    const [activeTransactionEtherscanURL, setActiveTransactionEtherscanURL] = useState(null);
 
     const handleTransferModalClose = () => {
         setDadIdToTransfer('');
@@ -22,11 +27,14 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const handleTransferModalTransfer = () => {
         setShowTransferModal(false);
         quissceDads.methods.safeTransferFrom(account, accountToTransferDad, dadIdToTransfer).send().on('transactionHash', (hash) => {
-            alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
+            window.scrollTo(0, 0);
 
-            setTimeout(() => setNeedsUpdate(true), 10000);
+            setActiveTransactionHash(hash);
+            setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
 
             setDadIdToTransfer('');
+        }).on('receipt', (receipt) => {
+            setActiveTransactionReceiptBlockHash(receipt.blockHash);
         });
     };
 
@@ -58,16 +66,24 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
 
     function burnDad(dadId) {
         quissceDads.methods.burnDad(dadId).send({ from: account }).on('transactionHash', (hash) => {
-            alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
-            setTimeout(() => setNeedsUpdate(true), 10000);
+            window.scrollTo(0, 0);
+
+            setActiveTransactionHash(hash);
+            setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+        }).on('receipt', (receipt) => {
+            setActiveTransactionReceiptBlockHash(receipt.blockHash);
         });
     }
 
     function updateSalePrice(dadId, amount) {
         quissceDads.methods.approve(quissceDads._address, dadId).send({ from: account }).on('transactionHash', (hash) => {
             quissceDads.methods.updateSalePrice(dadId, amount).send({ from: account }).on('transactionHash', (hash) => {
-                alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
-                setTimeout(() => setNeedsUpdate(true), 10000);
+                window.scrollTo(0, 0);
+
+                setActiveTransactionHash(hash);
+                setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+            }).on('receipt', (receipt) => {
+                setActiveTransactionReceiptBlockHash(receipt.blockHash);
             });
         });
     }
@@ -75,8 +91,12 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     function buyDad(dadId, amount) {
         quissceQoin.methods.approve(quissceDads._address, amount).send({ from: account }).on('transactionHash', (hash) => {
             quissceDads.methods.buyDadWithQuissceQoin(dadId).send({ from: account }).on('transactionHash', (hash) => {
-                alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
-                setTimeout(() => setNeedsUpdate(true), 10000);
+                window.scrollTo(0, 0);
+
+                setActiveTransactionHash(hash);
+                setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+            }).on('receipt', (receipt) => {
+                setActiveTransactionReceiptBlockHash(receipt.blockHash);
             });
         });
     }
@@ -128,6 +148,16 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     </Modal>;
 
     return <div className="browse-dad-db-table">
+        <TransactionTracker
+            activeTransactionHash={activeTransactionHash}
+            activeTransactionEtherscanURL={activeTransactionEtherscanURL}
+            activeTransactionReceiptBlockHash={activeTransactionReceiptBlockHash}
+            onClose={() => {
+                setActiveTransactionHash(null);
+                setActiveTransactionEtherscanURL(null);
+                setActiveTransactionReceiptBlockHash(null);
+                setNeedsUpdate(true);
+            }} />
         <Table striped bordered hover responsive>
             <thead>
                 <tr>

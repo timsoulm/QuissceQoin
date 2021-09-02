@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { InputGroup, FormControl, Form, Button, Card, ListGroup, Spinner } from 'react-bootstrap';
 import { create } from 'ipfs-http-client';
+import TransactionTracker from './TransactionTracker.js';
 
 function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDollars }) {
     const [quissceQoinBalance, setQuissceQoinBalance] = useState('0');
@@ -18,6 +19,10 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     const [dadIsSubmitting, setDadIsSubmitting] = useState(false);
 
     const [needsUpdate, setNeedsUpdate] = useState(false);
+
+    const [activeTransactionHash, setActiveTransactionHash] = useState(null);
+    const [activeTransactionReceiptBlockHash, setActiveTransactionReceiptBlockHash] = useState(null);
+    const [activeTransactionEtherscanURL, setActiveTransactionEtherscanURL] = useState(null);
 
     const ipfsClient = create('https://ipfs.infura.io:5001/api/v0');
 
@@ -53,20 +58,19 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
 
         setDadIsSubmitting(false);
 
-        console.log(quissceDads.transactionConfirmationBlocks)
-
         quissceQoin.methods.approve(quissceDads._address, web3.utils.toWei('100000', 'Ether')).send({ from: account }).on('transactionHash', (hash) => {
             quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies, uploadedJsonURI, fileUrl).send({ from: account }).on('transactionHash', (hash) => {
-                alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
+                window.scrollTo(0, 0);
 
-                setTimeout(() => {
-                    setNeedsUpdate(true);
-                }, 10000);
+                setActiveTransactionHash(hash);
+                setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
 
                 setFirstName('');
                 setLastName('');
                 setFavoriteFood('');
                 setHobbies('');
+            }).on('receipt', (receipt) => {
+                setActiveTransactionReceiptBlockHash(receipt.blockHash);
             });
         });
     }
@@ -92,6 +96,16 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     }, [quissceQoin, quissceDads, quissceDadDollars, account, needsUpdate]);
 
     return <div className="quissce-qoin-info-container">
+        <TransactionTracker
+            activeTransactionHash={activeTransactionHash}
+            activeTransactionEtherscanURL={activeTransactionEtherscanURL}
+            activeTransactionReceiptBlockHash={activeTransactionReceiptBlockHash}
+            onClose={() => {
+                setActiveTransactionHash(null);
+                setActiveTransactionEtherscanURL(null);
+                setActiveTransactionReceiptBlockHash(null);
+                setNeedsUpdate(true);
+            }} />
         <div className="quisse-qoin-info-container-component">
             <h4 className="quissce-qoin-info-container-component-header">Your Quissce Qoin Info</h4>
             <InputGroup className="mb-3">
@@ -133,11 +147,10 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 />
                 <Button variant="outline-secondary" onClick={() => {
                     quissceDadDollars.methods.claimDadDollars().send({ from: account }).on('transactionHash', (hash) => {
-                        alert(`transaction submitted with hash ${hash}. Wait a while before refreshing the page`);
-
-                        setTimeout(() => {
-                            setNeedsUpdate(true);
-                        }, 10000);
+                        setActiveTransactionHash(hash);
+                        setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+                    }).on('receipt', (receipt) => {
+                        setActiveTransactionReceiptBlockHash(receipt.blockHash);
                     });
                 }}>
                     Claim
@@ -170,7 +183,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                     } else if (dad.dadScore >= 990) {
                         dadScoreText = 'Dad scores do not get much higher than this. This is an ultimate father.';
                     }
-                    return <Card key={dad.id} style={{ width: '14rem', marginRight: '16px' }}>
+                    return <Card key={dad.id} style={{ width: '14rem', marginRight: '16px', marginBottom: '16px' }}>
                         <Card.Img style={{ objectFit: 'cover', height: '300px', width: '100%' }} variant="top" src={dad.imageURI} />
                         <Card.Body>
                             <Card.Title><a href={`https://kovan.etherscan.io/token/${quissceDads._address}?a=${dad.id}`} target="_blank" rel="noreferrer">{dad.firstName} {dad.lastName}</a></Card.Title>

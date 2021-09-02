@@ -27,4 +27,5 @@
 
 .quissce-dad-cards {
     display: flex;
+    flex-wrap: wrap;
 }
