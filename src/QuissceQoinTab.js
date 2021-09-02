@@ -7,8 +7,8 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     const [quissceQoinBalance, setQuissceQoinBalance] = useState('0');
     const [dadsOwnedByAddress, setDadsOwnedByAddress] = useState([]);
     const [dadDollarsBalance, setDadDollarsBalance] = useState('0');
-    const [claimedDadDollars, setClaimedDadDollars] = useState('0');
-    const [claimableDadDollarsBalance, setClaimableDadDollarsBalance] = useState('0');
+    const [claimedDadDollars, setClaimedDadDollars] = useState(null);
+    const [claimableDadDollarsBalance, setClaimableDadDollarsBalance] = useState(null);
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -143,7 +143,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 <InputGroup.Text id="dad-dollars-balance-add-on">Claimable Dad Dollars</InputGroup.Text>
                 <FormControl
                     readOnly
-                    value={claimableDadDollarsBalance - claimedDadDollars}
+                    value={claimableDadDollarsBalance === null || claimedDadDollars === null ? 0 : claimableDadDollarsBalance - claimedDadDollars}
                 />
                 <Button variant="outline-secondary" onClick={() => {
                     quissceDadDollars.methods.claimDadDollars().send({ from: account }).on('transactionHash', (hash) => {
