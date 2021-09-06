@@ -74,6 +74,13 @@ contract QuissceDads is
         string memory tokenURI,
         string memory imageURI
     ) public returns (uint256) {
+        for (uint256 i = 0; i < dadDataArray.length; i++) {
+            if (!dadDataArray[i].isBurned) {
+                address tokenOwner = ownerOf(i);
+                claimableDadDollars[tokenOwner] += dadDataArray[i].dadScore;
+            }
+        }
+
         quissceQoin.transferFrom(msg.sender, address(this), 100_000e18);
 
         uint256 newDadId = dadCounter;
@@ -93,11 +100,6 @@ contract QuissceDads is
 
         _safeMint(msg.sender, newDadId);
         _setTokenURI(newDadId, tokenURI);
-
-        for (uint256 i = 0; i < dadDataArray.length; i++) {
-            address tokenOwner = ownerOf(i);
-            claimableDadDollars[tokenOwner] += dadDataArray[i].dadScore;
-        }
 
         dadCounter++;
         return newDadId;

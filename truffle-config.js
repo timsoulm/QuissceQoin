@@ -52,8 +52,9 @@ module.exports = {
         },
         providerOrUrl: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`
       }),
-      gas: 5500000,
-      network_id: 42
+      gas: 3500000,
+      network_id: 42,
+      skipDryRun: false
     }
     // Another network with more advanced options...
     // advanced: {
