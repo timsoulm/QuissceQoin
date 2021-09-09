@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, InputGroup, FormControl } from 'react-bootstrap';
+import { useHistory } from "react-router-dom";
 import TransactionTracker from './TransactionTracker';
 import ApprovingTracker from './ApprovingTracker.js';
+import ViewDad from './ViewDad.js';
 
 function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const [dadData, setDadData] = useState([]);
@@ -57,6 +59,10 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const [needsUpdate, setNeedsUpdate] = useState(false);
 
     useEffect(() => {
+        if (!quissceDads) {
+            return;
+        }
+
         setNeedsUpdate(false);
         const fetch = async () => {
             let dadData = await quissceDads.methods.getDadData().call();
@@ -110,6 +116,10 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
         });
     }
 
+    function onRowClick(history, dadId) {
+        history.push(`/dads/${dadId}`);
+    }
+
     const transferDadModal = <Modal show={showTransferModal} onHide={handleTransferModalClose}>
         <Modal.Header>
             <Modal.Title>Transfer this Dad</Modal.Title>
@@ -156,6 +166,8 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
         </Modal.Footer>
     </Modal>;
 
+    const history = useHistory();
+
     return <div className="browse-dad-db-table">
         <ApprovingTracker isShown={showApprovalTracker} />
         <TransactionTracker
@@ -183,13 +195,13 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
             </thead>
             <tbody>
                 {dadData.filter(d => !d.isBurned).map(dad => <tr key={dad.id}>
-                    <td>{dad.id}</td>
-                    <td><img style={{ maxWidth: '150px', maxHeight: '150px' }} src={dad.imageURI} alt={`Dad ${dad.id}`} /></td>
-                    <td>{dad.firstName}</td>
-                    <td>{dad.lastName}</td>
-                    <td>{dad.favoriteFood}</td>
-                    <td>{dad.hobbies}</td>
-                    <td>{dad.dadScore}</td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.id}</td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}><img style={{ maxWidth: '150px', maxHeight: '150px' }} src={dad.imageURI} alt={`Dad ${dad.id}`} /></td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.firstName}</td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.lastName}</td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.favoriteFood}</td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.hobbies}</td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.dadScore}</td>
                     {ownedDads.find(d => d.id === dad.id) ? <td>
                         {web3.utils.fromWei(dad.salePrice, 'Ether') === '0' ? <Button style={{ marginRight: '4px' }} variant="success" size="sm" onClick={() => handleListModalShow(dad.id)}>
                             List for sale
@@ -211,6 +223,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
                 </tr>)}
             </tbody >
         </Table >
+        <ViewDad quissceDads={quissceDads} dadData={dadData} />
     </div >;
 }
 

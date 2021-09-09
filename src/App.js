@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import './App.css';
 import QuissceQoin from './abis/QuissceQoin.json';
 import QuissceDads from './abis/QuissceDads.json';
@@ -8,11 +14,6 @@ import QuissceQoinTab from './QuissceQoinTab.js';
 import BrowseDadDBTab from './BrowseDadDBTab.js';
 import getWeb3 from "./getWeb3";
 
-const TABS = {
-  'QUISSCE_QOIN': 'QUISSCE_QOIN',
-  'BROWSE_DAD_DB': 'BROWSE_DAD_DB',
-};
-
 function App() {
   const [account, setAccount] = useState('loading...');
 
@@ -21,7 +22,6 @@ function App() {
   const [quissceDadDollars, setQuissceDadDollars] = useState(undefined);
 
   const [web3, setWeb3] = useState(undefined);
-  const [currentTab, setCurrentTab] = useState(TABS.QUISSCE_QOIN);
 
   useEffect(() => {
     const init = async () => {
@@ -83,44 +83,39 @@ function App() {
     </div>;
   }
 
-  let activeTab = <div />;
-  switch (currentTab) {
-    case TABS.QUISSCE_QOIN:
-      activeTab = <QuissceQoinTab
-        web3={web3}
-        account={account}
-        quissceQoin={quissceQoin}
-        quissceDads={quissceDads}
-        quissceDadDollars={quissceDadDollars} />;
-      break;
-    case TABS.BROWSE_DAD_DB:
-      activeTab = <BrowseDadDBTab
-        web3={web3}
-        account={account}
-        quissceDads={quissceDads}
-        quissceQoin={quissceQoin} />
-      break;
-    default:
-      activeTab = 'Error';
-  }
-
   return (
-    <>
+    <Router>
       <Navbar bg="light" expand="lg">
         <Container>
-          <Navbar.Brand href="#" onClick={() => setCurrentTab(TABS.QUISSCE_QOIN)}>Quissce Qoin Execution Terminal</Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">Quissce Qoin Execution Terminal</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link onClick={() => setCurrentTab(TABS.BROWSE_DAD_DB)}>Browse Dad DB</Nav.Link>
+              <Nav.Link as={Link} to="/dads">Browse Dad DB</Nav.Link>
               <Nav.Link href="#" disabled>Soup Cents (coming soon)</Nav.Link>
               <Nav.Link href="#" disabled>Synergy Spheres (coming soon)</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {activeTab}
-    </>
+      <Switch>
+        <Route path='/dads/:id?'>
+          <BrowseDadDBTab
+            web3={web3}
+            account={account}
+            quissceDads={quissceDads}
+            quissceQoin={quissceQoin} />
+        </Route>
+        <Route path='/'>
+          <QuissceQoinTab
+            web3={web3}
+            account={account}
+            quissceQoin={quissceQoin}
+            quissceDads={quissceDads}
+            quissceDadDollars={quissceDadDollars} />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 

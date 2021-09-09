@@ -3,6 +3,7 @@ import { InputGroup, FormControl, Form, Button, Card, ListGroup, Spinner } from 
 import { create } from 'ipfs-http-client';
 import TransactionTracker from './TransactionTracker.js';
 import ApprovingTracker from './ApprovingTracker.js';
+import getDadScoreDescription from './DadScoreLookup.js';
 
 function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDollars }) {
     const [quissceQoinBalance, setQuissceQoinBalance] = useState('0');
@@ -174,28 +175,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
             <h4 className="quissce-qoin-info-container-component-header">Your Quissce Dad NFTs</h4>
             <div className="quissce-dad-cards">
                 {dadsOwnedByAddress.length ? dadsOwnedByAddress.map(dad => {
-                    let dadScoreText = '';
-                    if (dad.dadScore < 50) {
-                        dadScoreText = 'This dad score is so bad that its good!';
-                    } else if (dad.dadScore >= 50 && dad.dadScore < 150) {
-                        dadScoreText = 'This dad score is horrendous';
-                    } else if (dad.dadScore >= 150 && dad.dadScore < 300) {
-                        dadScoreText = 'This dad score is pretty bad';
-                    } else if (dad.dadScore >= 300 && dad.dadScore < 450) {
-                        dadScoreText = 'This dad score is not great';
-                    } else if (dad.dadScore >= 450 && dad.dadScore < 600) {
-                        dadScoreText = 'This dad score is good';
-                    } else if (dad.dadScore >= 600 && dad.dadScore < 750) {
-                        dadScoreText = 'This dad score is really quite good';
-                    } else if (dad.dadScore >= 750 && dad.dadScore < 900) {
-                        dadScoreText = 'This dad score is incredible';
-                    } else if (dad.dadScore >= 900 && dad.dadScore < 950) {
-                        dadScoreText = 'This dad score is mind boggling';
-                    } else if (dad.dadScore >= 950 && dad.dadScore < 990) {
-                        dadScoreText = 'This dad score is making my head spin its so ridiculously high';
-                    } else if (dad.dadScore >= 990) {
-                        dadScoreText = 'Dad scores do not get much higher than this. This is an ultimate father.';
-                    }
+                    let dadScoreText = getDadScoreDescription(dad.dadScore);
                     return <Card key={dad.id} style={{ width: '14rem', marginRight: '16px', marginBottom: '16px' }}>
                         <Card.Img style={{ objectFit: 'cover', height: '300px', width: '100%' }} variant="top" src={dad.imageURI} />
                         <Card.Body>
