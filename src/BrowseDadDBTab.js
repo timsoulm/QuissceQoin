@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, InputGroup, FormControl } from 'react-bootstrap';
 import TransactionTracker from './TransactionTracker';
+import ApprovingTracker from './ApprovingTracker.js';
 
 function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const [dadData, setDadData] = useState([]);
@@ -15,6 +16,8 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     const [activeTransactionHash, setActiveTransactionHash] = useState(null);
     const [activeTransactionReceiptBlockHash, setActiveTransactionReceiptBlockHash] = useState(null);
     const [activeTransactionEtherscanURL, setActiveTransactionEtherscanURL] = useState(null);
+
+    const [showApprovalTracker, setShowApprovalTracker] = useState(false);
 
     const handleTransferModalClose = () => {
         setDadIdToTransfer('');
@@ -76,9 +79,13 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     }
 
     function updateSalePrice(dadId, amount) {
-        quissceDads.methods.approve(quissceDads._address, dadId).send({ from: account }).on('transactionHash', (hash) => {
+        quissceDads.methods.approve(quissceDads._address, dadId).send({ from: account }).on('transactionHash', () => {
+            window.scrollTo(0, 0);
+            setShowApprovalTracker(true);
+        }).on('receipt', (receipt) => {
+            setShowApprovalTracker(false);
             quissceDads.methods.updateSalePrice(dadId, amount).send({ from: account }).on('transactionHash', (hash) => {
-                window.scrollTo(0, 0);
+
 
                 setActiveTransactionHash(hash);
                 setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
@@ -89,10 +96,12 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     }
 
     function buyDad(dadId, amount) {
-        quissceQoin.methods.approve(quissceDads._address, amount).send({ from: account }).on('transactionHash', (hash) => {
+        quissceQoin.methods.approve(quissceDads._address, amount).send({ from: account }).on('transactionHash', () => {
+            window.scrollTo(0, 0);
+            setShowApprovalTracker(true);
+        }).on('receipt', (receipt) => {
+            setShowApprovalTracker(false);
             quissceDads.methods.buyDadWithQuissceQoin(dadId).send({ from: account }).on('transactionHash', (hash) => {
-                window.scrollTo(0, 0);
-
                 setActiveTransactionHash(hash);
                 setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
             }).on('receipt', (receipt) => {
@@ -148,6 +157,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     </Modal>;
 
     return <div className="browse-dad-db-table">
+        <ApprovingTracker isShown={showApprovalTracker} />
         <TransactionTracker
             activeTransactionHash={activeTransactionHash}
             activeTransactionEtherscanURL={activeTransactionEtherscanURL}

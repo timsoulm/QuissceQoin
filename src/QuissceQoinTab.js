@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InputGroup, FormControl, Form, Button, Card, ListGroup, Spinner } from 'react-bootstrap';
 import { create } from 'ipfs-http-client';
 import TransactionTracker from './TransactionTracker.js';
+import ApprovingTracker from './ApprovingTracker.js';
 
 function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDollars }) {
     const [quissceQoinBalance, setQuissceQoinBalance] = useState('0');
@@ -23,6 +24,8 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     const [activeTransactionHash, setActiveTransactionHash] = useState(null);
     const [activeTransactionReceiptBlockHash, setActiveTransactionReceiptBlockHash] = useState(null);
     const [activeTransactionEtherscanURL, setActiveTransactionEtherscanURL] = useState(null);
+
+    const [showApprovalTracker, setShowApprovalTracker] = useState(false);
 
     const ipfsClient = create('https://ipfs.infura.io:5001/api/v0');
 
@@ -58,10 +61,12 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
 
         setDadIsSubmitting(false);
 
-        quissceQoin.methods.approve(quissceDads._address, web3.utils.toWei('100000', 'Ether')).send({ from: account }).on('transactionHash', (hash) => {
+        quissceQoin.methods.approve(quissceDads._address, web3.utils.toWei('100000', 'Ether')).send({ from: account }).on('transactionHash', () => {
+            window.scrollTo(0, 0);
+            setShowApprovalTracker(true);
+        }).on('receipt', (receipt) => {
+            setShowApprovalTracker(false);
             quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies, uploadedJsonURI, fileUrl).send({ from: account }).on('transactionHash', (hash) => {
-                window.scrollTo(0, 0);
-
                 setActiveTransactionHash(hash);
                 setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
 
@@ -96,6 +101,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     }, [quissceQoin, quissceDads, quissceDadDollars, account, needsUpdate]);
 
     return <div className="quissce-qoin-info-container">
+        <ApprovingTracker isShown={showApprovalTracker} />
         <TransactionTracker
             activeTransactionHash={activeTransactionHash}
             activeTransactionEtherscanURL={activeTransactionEtherscanURL}
