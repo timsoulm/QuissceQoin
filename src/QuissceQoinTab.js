@@ -46,10 +46,17 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     async function onFormSubmit(e) {
         e.preventDefault();
 
+        let dadCounter = await quissceDads.methods.dadCounter().call();
+
         setDadIsSubmitting(true);
         let uploadedJsonURI;
         try {
-            const metaObj = { "name": firstName + lastName, "image": fileUrl };
+            const metaObj = {
+                "name": firstName + lastName,
+                "description": `This dad enjoys eating ${favoriteFood}. Their hobbies include ${hobbies}.`,
+                "image": fileUrl,
+                "external_url": `https://www.quissce.biz/dads/${dadCounter}`
+            };
             const jsonObj = JSON.stringify(metaObj);
             const added = await ipfsClient.add(jsonObj);
             uploadedJsonURI = `https://ipfs.infura.io/ipfs/${added.path}`;
