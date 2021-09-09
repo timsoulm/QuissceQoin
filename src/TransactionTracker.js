@@ -6,8 +6,8 @@ function TransactionTracker({
     activeTransactionReceiptBlockHash,
     onClose
 }) {
-    return <Alert show={activeTransactionHash !== null} variant="info">
-        <Alert.Heading>Transaction Underway</Alert.Heading>
+    return <Alert show={activeTransactionHash !== null} variant={activeTransactionReceiptBlockHash ? 'success' : 'info'}>
+        <Alert.Heading>Transaction {activeTransactionReceiptBlockHash ? 'Complete' : 'Underway'}</Alert.Heading>
         <div>Transaction hash: {activeTransactionHash}</div>
         {activeTransactionReceiptBlockHash ? <div>Receipt Block Hash: {activeTransactionReceiptBlockHash}</div> : <div>Waiting for receipt...</div>}
         {activeTransactionReceiptBlockHash ? <><br /><div>You're good to hit the close and refresh button now</div></> : null}
