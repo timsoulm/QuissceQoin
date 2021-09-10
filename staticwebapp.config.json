@@ -2,7 +2,18 @@
     "routes": [
         {
             "route": "/*",
-            "rewrite": "/index.html"
+            "serve": "/index.html",
+            "statusCode": 200
         }
-    ]
+    ],
+    "navigationFallback": {
+        "rewrite": "index.html",
+        "exclude": [
+            "/*.{png,jpg,gif,ico}",
+            "static/css/*"
+        ]
+    },
+    "mimeTypes": {
+        ".json": "text/json"
+    }
 }
