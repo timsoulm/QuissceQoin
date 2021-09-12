@@ -76,6 +76,10 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
     }, [quissceDads, needsUpdate]);
 
     useEffect(() => {
+        if (!quissceDads || !dadData.length) {
+            return;
+        }
+
         dadData.forEach(dad => {
             quissceDads.methods.tokenURI(dad.id).call().then(tokenURI => {
                 fetch(tokenURI).then((response) => response.json()).then(json => {
@@ -85,7 +89,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
                 });
             });
         });
-    }, [dadData]);
+    }, [dadData, quissceDads]);
 
     function burnDad(dadId) {
         quissceDads.methods.burnDad(dadId).send({ from: account }).on('transactionHash', (hash) => {

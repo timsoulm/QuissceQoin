@@ -110,6 +110,9 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     }, [quissceQoin, quissceDads, quissceDadDollars, account, needsUpdate]);
 
     useEffect(() => {
+        if (!quissceDads || !dadsOwnedByAddress.length) {
+            return;
+        }
         dadsOwnedByAddress.forEach(dad => {
             quissceDads.methods.tokenURI(dad.id).call().then(tokenURI => {
                 fetch(tokenURI).then((response) => response.json()).then(json => {
@@ -119,7 +122,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 });
             })
         });
-    }, [dadsOwnedByAddress]);
+    }, [dadsOwnedByAddress, quissceDads]);
 
     return <div className="quissce-qoin-info-container">
         <ApprovingTracker isShown={showApprovalTracker} />
