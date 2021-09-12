@@ -27,6 +27,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
     const [activeTransactionEtherscanURL, setActiveTransactionEtherscanURL] = useState(null);
 
     const [showApprovalTracker, setShowApprovalTracker] = useState(false);
+    const [dadImages, setDadImages] = useState({});
 
     const ipfsClient = create('https://ipfs.infura.io:5001/api/v0');
 
@@ -53,7 +54,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
         let uploadedJsonURI;
         try {
             const metaObj = {
-                "name": firstName + lastName,
+                "name": `${firstName} ${lastName}`,
                 "description": `This dad enjoys eating ${favoriteFood}. Their hobbies include ${hobbies}.`,
                 "image": fileUrl,
                 "external_url": `https://www.quissce.biz/dads/${dadCounter}`
@@ -74,7 +75,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
             setShowApprovalTracker(true);
         }).on('receipt', (receipt) => {
             setShowApprovalTracker(false);
-            quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies, uploadedJsonURI, fileUrl).send({ from: account }).on('transactionHash', (hash) => {
+            quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies, uploadedJsonURI).send({ from: account }).on('transactionHash', (hash) => {
                 setActiveTransactionHash(hash);
                 setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
 
@@ -107,6 +108,18 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
         }
         fetch();
     }, [quissceQoin, quissceDads, quissceDadDollars, account, needsUpdate]);
+
+    useEffect(() => {
+        dadsOwnedByAddress.forEach(dad => {
+            quissceDads.methods.tokenURI(dad.id).call().then(tokenURI => {
+                fetch(tokenURI).then((response) => response.json()).then(json => {
+                    setDadImages(prevState => {
+                        return { ...prevState, [dad.id]: json.image }
+                    });
+                });
+            })
+        });
+    }, [dadsOwnedByAddress]);
 
     return <div className="quissce-qoin-info-container">
         <ApprovingTracker isShown={showApprovalTracker} />
@@ -177,7 +190,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 {dadsOwnedByAddress.length ? dadsOwnedByAddress.map(dad => {
                     let dadScoreText = getDadScoreDescription(dad.dadScore);
                     return <Card key={dad.id} style={{ width: '14rem', marginRight: '16px', marginBottom: '16px' }}>
-                        <Card.Img style={{ objectFit: 'cover', height: '300px', width: '100%' }} variant="top" src={dad.imageURI} />
+                        <Card.Img style={{ objectFit: 'cover', height: '300px', width: '100%' }} variant="top" src={dadImages[dad.id]} />
                         <Card.Body>
                             <Card.Title><a href={`https://kovan.etherscan.io/token/${quissceDads._address}?a=${dad.id}`} target="_blank" rel="noreferrer">{dad.firstName} {dad.lastName}</a></Card.Title>
                             <ListGroup variant="flush">

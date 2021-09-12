@@ -55,6 +55,17 @@ module.exports = {
       gas: 3500000,
       network_id: 42,
       skipDryRun: false
+    },
+    rinkeby: {
+      provider: () => new HDWalletProvider({
+        mnemonic: {
+          phrase: process.env.MNEMONIC
+        },
+        providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`
+      }),
+      gas: 4500000,
+      network_id: 4,
+      skipDryRun: false
     }
     // Another network with more advanced options...
     // advanced: {

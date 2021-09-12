@@ -23,8 +23,6 @@ contract QuissceDads is
         uint256 dadScore;
         bool isBurned;
         uint256 salePrice;
-        string tokenURI;
-        string imageURI;
     }
 
     Dad[] public dadDataArray;
@@ -71,8 +69,7 @@ contract QuissceDads is
         string memory lastName,
         string memory favoriteFood,
         string memory hobbies,
-        string memory tokenURI,
-        string memory imageURI
+        string memory tokenURI
     ) public returns (uint256) {
         quissceQoin.transferFrom(msg.sender, address(this), 100_000e18);
 
@@ -85,9 +82,7 @@ contract QuissceDads is
             hobbies,
             getDadScore(newDadId, firstName),
             false,
-            0,
-            tokenURI,
-            imageURI
+            0
         );
         dadDataArray.push(newDad);
 

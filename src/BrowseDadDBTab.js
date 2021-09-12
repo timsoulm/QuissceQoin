@@ -21,6 +21,8 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
 
     const [showApprovalTracker, setShowApprovalTracker] = useState(false);
 
+    const [dadImages, setDadImages] = useState({});
+
     const handleTransferModalClose = () => {
         setDadIdToTransfer('');
         setShowTransferModal(false);
@@ -72,6 +74,18 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
         }
         fetch();
     }, [quissceDads, needsUpdate]);
+
+    useEffect(() => {
+        dadData.forEach(dad => {
+            quissceDads.methods.tokenURI(dad.id).call().then(tokenURI => {
+                fetch(tokenURI).then((response) => response.json()).then(json => {
+                    setDadImages(prevState => {
+                        return { ...prevState, [dad.id]: json.image }
+                    })
+                });
+            });
+        });
+    }, [dadData]);
 
     function burnDad(dadId) {
         quissceDads.methods.burnDad(dadId).send({ from: account }).on('transactionHash', (hash) => {
@@ -196,7 +210,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
             <tbody>
                 {dadData.filter(d => !d.isBurned).map(dad => <tr key={dad.id}>
                     <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.id}</td>
-                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}><img style={{ maxWidth: '150px', maxHeight: '150px' }} src={dad.imageURI} alt={`Dad ${dad.id}`} /></td>
+                    <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}><img style={{ maxWidth: '150px', maxHeight: '150px' }} src={dadImages[dad.id]} alt={`Dad ${dad.id}`} /></td>
                     <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.firstName}</td>
                     <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.lastName}</td>
                     <td className="rowClickable" onClick={() => onRowClick(history, dad.id)}>{dad.favoriteFood}</td>
