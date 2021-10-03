@@ -195,7 +195,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                     return <Card key={dad.id} style={{ width: '14rem', marginRight: '16px', marginBottom: '16px' }}>
                         <Card.Img style={{ objectFit: 'cover', height: '300px', width: '100%' }} variant="top" src={dadImages[dad.id]} />
                         <Card.Body>
-                            <Card.Title><a href={`https://etherscan.io/token/${quissceDads._address}?a=${dad.id}`} target="_blank" rel="noreferrer">{dad.firstName} {dad.lastName}</a></Card.Title>
+                            <Card.Title><a href={`https://opensea.io/assets/${quissceDads._address}/${dad.id}`} target="_blank" rel="noreferrer">{dad.firstName} {dad.lastName}</a></Card.Title>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>Favorite Food: {dad.favoriteFood}</ListGroup.Item>
                                 <ListGroup.Item>Hobbies: {dad.hobbies}</ListGroup.Item>
