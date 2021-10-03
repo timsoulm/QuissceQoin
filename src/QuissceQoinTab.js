@@ -77,7 +77,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
             setShowApprovalTracker(false);
             quissceDads.methods.createDad(firstName, lastName, favoriteFood, hobbies, uploadedJsonURI).send({ from: account }).on('transactionHash', (hash) => {
                 setActiveTransactionHash(hash);
-                setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+                setActiveTransactionEtherscanURL(`https://etherscan.io/tx/${hash}`);
 
                 setFirstName('');
                 setLastName('');
@@ -178,7 +178,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                 <Button variant="outline-secondary" onClick={() => {
                     quissceDadDollars.methods.claimDadDollars().send({ from: account }).on('transactionHash', (hash) => {
                         setActiveTransactionHash(hash);
-                        setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+                        setActiveTransactionEtherscanURL(`https://etherscan.io/tx/${hash}`);
                     }).on('receipt', (receipt) => {
                         setActiveTransactionReceiptBlockHash(receipt.blockHash);
                     });
@@ -195,7 +195,7 @@ function QuissceQoinTab({ web3, account, quissceQoin, quissceDads, quissceDadDol
                     return <Card key={dad.id} style={{ width: '14rem', marginRight: '16px', marginBottom: '16px' }}>
                         <Card.Img style={{ objectFit: 'cover', height: '300px', width: '100%' }} variant="top" src={dadImages[dad.id]} />
                         <Card.Body>
-                            <Card.Title><a href={`https://kovan.etherscan.io/token/${quissceDads._address}?a=${dad.id}`} target="_blank" rel="noreferrer">{dad.firstName} {dad.lastName}</a></Card.Title>
+                            <Card.Title><a href={`https://etherscan.io/token/${quissceDads._address}?a=${dad.id}`} target="_blank" rel="noreferrer">{dad.firstName} {dad.lastName}</a></Card.Title>
                             <ListGroup variant="flush">
                                 <ListGroup.Item>Favorite Food: {dad.favoriteFood}</ListGroup.Item>
                                 <ListGroup.Item>Hobbies: {dad.hobbies}</ListGroup.Item>

@@ -37,7 +37,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
             window.scrollTo(0, 0);
 
             setActiveTransactionHash(hash);
-            setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+            setActiveTransactionEtherscanURL(`https://etherscan.io/tx/${hash}`);
 
             setDadIdToTransfer('');
         }).on('receipt', (receipt) => {
@@ -96,7 +96,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
             window.scrollTo(0, 0);
 
             setActiveTransactionHash(hash);
-            setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+            setActiveTransactionEtherscanURL(`https://etherscan.io/tx/${hash}`);
         }).on('receipt', (receipt) => {
             setActiveTransactionReceiptBlockHash(receipt.blockHash);
         });
@@ -112,7 +112,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
 
 
                 setActiveTransactionHash(hash);
-                setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+                setActiveTransactionEtherscanURL(`https://etherscan.io/tx/${hash}`);
             }).on('receipt', (receipt) => {
                 setActiveTransactionReceiptBlockHash(receipt.blockHash);
             });
@@ -127,7 +127,7 @@ function BrowseDadDBTab({ web3, account, quissceDads, quissceQoin }) {
             setShowApprovalTracker(false);
             quissceDads.methods.buyDadWithQuissceQoin(dadId).send({ from: account }).on('transactionHash', (hash) => {
                 setActiveTransactionHash(hash);
-                setActiveTransactionEtherscanURL(`https://kovan.etherscan.io/tx/${hash}`);
+                setActiveTransactionEtherscanURL(`https://etherscan.io/tx/${hash}`);
             }).on('receipt', (receipt) => {
                 setActiveTransactionReceiptBlockHash(receipt.blockHash);
             });

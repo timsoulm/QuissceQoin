@@ -51,7 +51,7 @@ function ViewDad({ quissceDads, dadData }) {
                     <ul>
                         <li>{getDadScoreDescription(currentDad.dadScore)}</li>
                     </ul>
-                    <li>Etherscan Link: <a href={`https://kovan.etherscan.io/token/${quissceDads._address}?a=${currentDad.id}`} target="_blank" rel="noreferrer">link</a>
+                    <li>Etherscan Link: <a href={`https://etherscan.io/token/${quissceDads._address}?a=${currentDad.id}`} target="_blank" rel="noreferrer">link</a>
                     </li>
                 </ul>
             </div>
