@@ -61,11 +61,24 @@ module.exports = {
         mnemonic: {
           phrase: process.env.MNEMONIC
         },
-        providerOrUrl: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`
+        providerOrUrl: `wss://rinkeby.infura.io/ws/v3/${process.env.INFURA_API_KEY}`
       }),
-      gas: 4500000,
+      gas: 5700000,
       network_id: 4,
       skipDryRun: false
+    },
+    mainnet: {
+      provider: () => new HDWalletProvider({
+        mnemonic: {
+          phrase: process.env.MNEMONIC
+        },
+        providerOrUrl: `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_API_KEY}`
+      }),
+      gas: 5700000,
+      network_id: 1,
+      timeoutBlocks: 200,
+      gasPrice: 40000000000,
+      skipDryRun: true
     }
     // Another network with more advanced options...
     // advanced: {
