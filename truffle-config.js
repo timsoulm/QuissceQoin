@@ -147,4 +147,10 @@ module.exports = {
   // }
   contracts_directory: './src/contracts/',
   contracts_build_directory: './src/abis/',
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    etherscan: process.env.ETHERSCAN_API_KEY
+  }
 };
